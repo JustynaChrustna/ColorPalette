@@ -18,7 +18,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ColorActivity"></activity>
+        <activity android:name=".ColorActivity" android:parentActivityName=".PaletteActivity"></activity>
+        <meta-data android:name="android.support.PARENT_ACTIVITY" android:value="justynachrustna.colorpalette.PaletteActivity"/>
     </application>
 
 </manifest>
