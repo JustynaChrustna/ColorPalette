@@ -1,5 +1,6 @@
 package justynachrustna.colorpalette;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -23,6 +24,7 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     public static final String RED = "red";
     public static final String GREEN = "green";
     public static final String BLUE = "blue";
+    public static final String COLOR_IN_HEX_KEY="Color in hex:";
     @BindView(R.id.redSeekBar)
     SeekBar redSeekBar;
     @BindView(R.id.greenSeekBar)
@@ -88,7 +90,10 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
 
     @OnClick(R.id.saveButton)
     public void save(){
-
+        Intent data= new Intent();
+        data.putExtra(COLOR_IN_HEX_KEY, String.format("#%02X%02X%02X", red, green, blue));
+        setResult(RESULT_OK,data);
+        finish();
     }
 
 
@@ -99,10 +104,10 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
                 red=progress;
                 break;
             case R.id.greenSeekBar:
-                red=progress;
+                green=progress;
                 break;
             case R.id.blueSeekBar:
-                red=progress;
+                blue=progress;
                 break;
         }
         updateBackgroundColor();
