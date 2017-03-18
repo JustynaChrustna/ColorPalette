@@ -2,7 +2,6 @@ package justynachrustna.colorpalette;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,9 +16,10 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PaletteActivity extends AppCompatActivity {
+public class PaletteActivity extends AppCompatActivity implements ColorAdapter.ColorClickedListener {
 
     public static final int REQUEST_CODE_CREATE = 1;
+    private static final int REQUEST_CODE_EDIT = 2;
     @BindView(R.id.colorsRecyclerView)
     RecyclerView colorsRecyclerView;
     private FloatingActionButton fab;
@@ -43,11 +43,11 @@ public class PaletteActivity extends AppCompatActivity {
 
             }
         });
-        colorAdapter=new ColorAdapter(getLayoutInflater());
-
+        colorAdapter = new ColorAdapter(getLayoutInflater());
+        colorAdapter.setColorClickedListener(this);
         colorsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         colorsRecyclerView.setAdapter(colorAdapter);
-        ItemTouchHelper.SimpleCallback simpleCallback=new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -56,12 +56,12 @@ public class PaletteActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                int position= viewHolder.getAdapterPosition();
+                int position = viewHolder.getAdapterPosition();
                 colorAdapter.remove(position);
 
             }
         };
-        ItemTouchHelper itemTouchHelper=new ItemTouchHelper(simpleCallback);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(colorsRecyclerView);
 
     }
@@ -99,13 +99,26 @@ public class PaletteActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CREATE) {
+                String colorInHex = data.getStringExtra(ColorActivity.COLOR_IN_HEX_KEY);
+                Snackbar.make(fab, getString(R.string.new_color_created, colorInHex), Snackbar.LENGTH_LONG)
+                        .show();
+                colorAdapter.add(colorInHex);
+            }else if (requestCode==REQUEST_CODE_EDIT){
+                String colorInHex = data.getStringExtra(ColorActivity.COLOR_IN_HEX_KEY);
+                String oldColor = data.getStringExtra(ColorActivity.OLD_COLOR_KEY);
 
-        if (requestCode == REQUEST_CODE_CREATE && resultCode == RESULT_OK) {
-            String colorInHex = data.getStringExtra(ColorActivity.COLOR_IN_HEX_KEY);
-            Snackbar.make(fab, getString(R.string.new_color_created, colorInHex), Snackbar.LENGTH_LONG)
-                    .show();
-            colorAdapter.add(colorInHex);
+                colorAdapter.replace(oldColor, colorInHex);
+            }
 
         }
+    }
+
+    @Override
+    public void onColorClicked(String colorInHex) {
+        Intent intent = new Intent(this, ColorActivity.class);
+        intent.putExtra(ColorActivity.OLD_COLOR_KEY, colorInHex);
+        startActivityForResult(intent, REQUEST_CODE_EDIT);
     }
 }

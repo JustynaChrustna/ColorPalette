@@ -25,6 +25,7 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     public static final String GREEN = "green";
     public static final String BLUE = "blue";
     public static final String COLOR_IN_HEX_KEY="Color in hex:";
+    public static final String OLD_COLOR_KEY = "old_color_key";
     @BindView(R.id.redSeekBar)
     SeekBar redSeekBar;
     @BindView(R.id.greenSeekBar)
@@ -44,6 +45,7 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
 
     private ActionBar actionBar;
     private Random random= new Random();
+    private String oldColor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,20 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
         actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);//wyświetli się strzałka
         //obsługa kliknięcia na strzałkę
-       redSeekBar.setOnSeekBarChangeListener(this);
+        redSeekBar.setOnSeekBarChangeListener(this);
         greenSeekBar.setOnSeekBarChangeListener(this);
         blueSeekBar.setOnSeekBarChangeListener(this);
+        Intent intent= getIntent();
+        oldColor = intent.getStringExtra(OLD_COLOR_KEY);
+        if(oldColor!=null){
+            int color=Color.parseColor(oldColor);
+            red=Color.red(color);
+            green=Color.green(color);
+            blue=Color.blue(color);
+            updateSeekBars();
+            updateBackgroundColor();
+            generateButton.setVisibility(View.GONE);
+        }
 
 
 
@@ -75,12 +88,16 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
         red=random.nextInt(256);
         green=random.nextInt(256);
         blue=random.nextInt(256);
-        redSeekBar.setProgress(red);
-        greenSeekBar.setProgress(green);
-        blueSeekBar.setProgress(blue);
+        updateSeekBars();
 
         updateBackgroundColor();
 
+    }
+
+    private void updateSeekBars() {
+        redSeekBar.setProgress(red);
+        greenSeekBar.setProgress(green);
+        blueSeekBar.setProgress(blue);
     }
 
     private void updateBackgroundColor() {
@@ -92,6 +109,9 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     public void save(){
         Intent data= new Intent();
         data.putExtra(COLOR_IN_HEX_KEY, String.format("#%02X%02X%02X", red, green, blue));
+        if(oldColor!=null){
+            data.putExtra(OLD_COLOR_KEY, oldColor);
+        }
         setResult(RESULT_OK,data);
         finish();
     }
