@@ -11,12 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.Random;
 
-import butterknife.ButterKnife;
-
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
@@ -24,7 +24,7 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     public static final String RED = "red";
     public static final String GREEN = "green";
     public static final String BLUE = "blue";
-    public static final String COLOR_IN_HEX_KEY="Color in hex:";
+    public static final String COLOR_IN_HEX_KEY = "Color in hex:";
     public static final String OLD_COLOR_KEY = "old_color_key";
     @BindView(R.id.redSeekBar)
     SeekBar redSeekBar;
@@ -38,13 +38,19 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     Button saveButton;
     @BindView(R.id.colorLinearLayout)
     LinearLayout colorLinearLayout;
+    @BindView(R.id.redLabel)
+    TextView redLabel;
+    @BindView(R.id.greenLabel)
+    TextView greenLabel;
+    @BindView(R.id.blueLabel)
+    TextView blueLabel;
 
     private int red;
     private int green;
     private int blue;
 
     private ActionBar actionBar;
-    private Random random= new Random();
+    private Random random = new Random();
     private String oldColor;
 
     @Override
@@ -59,18 +65,18 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
         redSeekBar.setOnSeekBarChangeListener(this);
         greenSeekBar.setOnSeekBarChangeListener(this);
         blueSeekBar.setOnSeekBarChangeListener(this);
-        Intent intent= getIntent();
+        Intent intent = getIntent();
         oldColor = intent.getStringExtra(OLD_COLOR_KEY);
-        if(oldColor!=null){
-            int color=Color.parseColor(oldColor);
-            red=Color.red(color);
-            green=Color.green(color);
-            blue=Color.blue(color);
+        if (oldColor != null) {
+            int color = Color.parseColor(oldColor);
+            red = Color.red(color);
+            green = Color.green(color);
+            blue = Color.blue(color);
             updateSeekBars();
             updateBackgroundColor();
             generateButton.setVisibility(View.GONE);
+            actionBar.setTitle(R.string.edit_color);
         }
-
 
 
     }
@@ -83,11 +89,12 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
         }
         return super.onOptionsItemSelected(item);
     }
+
     @OnClick(R.id.generateButton)
-    public void generate(){
-        red=random.nextInt(256);
-        green=random.nextInt(256);
-        blue=random.nextInt(256);
+    public void generate() {
+        red = random.nextInt(256);
+        green = random.nextInt(256);
+        blue = random.nextInt(256);
         updateSeekBars();
 
         updateBackgroundColor();
@@ -101,33 +108,37 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     }
 
     private void updateBackgroundColor() {
-        int color= Color.rgb(red, green, blue);
+        int color = Color.rgb(red, green, blue);
+        int textColor=PaletteActivity.getTextColorFromColor(color);
+        redLabel.setTextColor(textColor);
+        greenLabel.setTextColor(textColor);
+        blueLabel.setTextColor(textColor);
         colorLinearLayout.setBackgroundColor(color);
     }
 
     @OnClick(R.id.saveButton)
-    public void save(){
-        Intent data= new Intent();
+    public void save() {
+        Intent data = new Intent();
         data.putExtra(COLOR_IN_HEX_KEY, String.format("#%02X%02X%02X", red, green, blue));
-        if(oldColor!=null){
+        if (oldColor != null) {
             data.putExtra(OLD_COLOR_KEY, oldColor);
         }
-        setResult(RESULT_OK,data);
+        setResult(RESULT_OK, data);
         finish();
     }
 
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        switch(seekBar.getId()){
+        switch (seekBar.getId()) {
             case R.id.redSeekBar:
-                red=progress;
+                red = progress;
                 break;
             case R.id.greenSeekBar:
-                green=progress;
+                green = progress;
                 break;
             case R.id.blueSeekBar:
-                blue=progress;
+                blue = progress;
                 break;
         }
         updateBackgroundColor();
@@ -143,8 +154,9 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     public void onStopTrackingTouch(SeekBar seekBar) {
 
     }
+
     @Override
-    protected void onSaveInstanceState(Bundle outState){
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(RED, red);
         outState.putInt(GREEN, green);
@@ -154,9 +166,9 @@ public class ColorActivity extends AppCompatActivity implements SeekBar.OnSeekBa
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        red=savedInstanceState.getInt(RED);
-        green=savedInstanceState.getInt(GREEN);
-        blue=savedInstanceState.getInt(BLUE);
+        red = savedInstanceState.getInt(RED);
+        green = savedInstanceState.getInt(GREEN);
+        blue = savedInstanceState.getInt(BLUE);
 
     }
 }

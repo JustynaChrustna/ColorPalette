@@ -13,7 +13,6 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarInputStream;
 
 public class ColorAdapter extends RecyclerView.Adapter<ColorViewHolder>{
     public static final String COLORS_KEY = "colors";
@@ -56,10 +55,12 @@ public class ColorAdapter extends RecyclerView.Adapter<ColorViewHolder>{
         return colors.size();
     }
 
-    public void add(String color) {
+    public int add(String color) {
         colors.add(color);
-        notifyItemInserted(colors.size() - 1);
+        int position=colors.size()-1;
+        notifyItemInserted(position);
         storeInPreferences();
+        return position;
     }
 
     private void storeInPreferences() {
@@ -119,6 +120,7 @@ class ColorViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
     private TextView textView;
     private final ColorAdapter colorAdapter;
 
+
     public ColorViewHolder(View itemView, ColorAdapter colorAdapter){
             super(itemView);
             textView= (TextView) itemView;
@@ -130,7 +132,9 @@ class ColorViewHolder extends RecyclerView.ViewHolder implements View.OnClickLis
     public void setColor(String color) {
         this.color = color;
         textView.setText(color);
-        textView.setBackgroundColor(Color.parseColor(color));
+        int backgroundColor= Color.parseColor(color);
+        textView.setBackgroundColor(backgroundColor);
+        textView.setTextColor(PaletteActivity.getTextColorFromColor(backgroundColor));
     }
     public String getColor(){
         return color;

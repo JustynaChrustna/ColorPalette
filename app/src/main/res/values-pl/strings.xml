@@ -6,4 +6,7 @@
     <string name="green">Zielony</string>
     <string name="red">Czerwony</string>
     <string name="save">Zapisz</string>
+    <string name="edit_color">Edytuj kolor</string>
+    <string name="new_color_created">Nowykolor: %s</string>
+    <string name="undo">Cofnij</string>
 </resources>
