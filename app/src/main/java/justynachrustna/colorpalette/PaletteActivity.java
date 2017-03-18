@@ -2,6 +2,7 @@ package justynachrustna.colorpalette;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -43,7 +44,7 @@ public class PaletteActivity extends AppCompatActivity implements ColorAdapter.C
 
             }
         });
-        colorAdapter = new ColorAdapter(getLayoutInflater());
+        colorAdapter = new ColorAdapter(getLayoutInflater(), PreferenceManager.getDefaultSharedPreferences(this));
         colorAdapter.setColorClickedListener(this);
         colorsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         colorsRecyclerView.setAdapter(colorAdapter);
@@ -90,6 +91,7 @@ public class PaletteActivity extends AppCompatActivity implements ColorAdapter.C
             addColor();
             return true;
         } else if (id == R.id.action_clear) {
+            colorAdapter.clear();
             return true;
         }
 
